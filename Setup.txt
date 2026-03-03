@@ -1,0 +1,196 @@
+Django Project Setup:
+
+✅ STEP 1: Create Project Folder
+
+✅ STEP 2: Create Virtual Environment:
+
+      python -m venv venv
+      Activate it: venv\Scripts\activate
+
+✅ STEP 3: Install Django:
+
+      pip install django
+
+✅ STEP 4: Create Django Project:
+
+1. django-admin startproject student_demo core 
+
+    this command will create a project structure like this:
+
+        |django-folder
+           |student_demo
+              |core
+        |venv
+
+✅ STEP 5: run dev server using : python manage.py runserver
+
+Using the above STEPs we will be creating a basic django project and you should see Django success page.
+
+
+✅ STEP 6: Create an App
+
+Now create an app inside project:
+    
+    python manage.py startapp your-app-name
+    
+Now your project structure will be :
+
+    |django-folder
+           |student_demo
+              |core
+              |students
+        |venv    
+
+✅ STEP 7: Register the App
+
+In core's settings.py inside INSTALLED_APPS register your newly created app students
+
+
+✅ STEP 8: Create a Model
+
+students/models.py
+
+Example:
+
+    from django.db import models
+
+    class Student(models.Model):
+        name = models.CharField(max_length=100)
+        age = models.IntegerField()
+        email = models.EmailField()
+
+        def __str__(self):
+            return self.name
+
+✅ STEP 9: Create Migrations
+        
+        python manage.py makemigrations        
+        python manage.py migrate  
+
+
+✅ STEP 10: Register Model in Admin
+
+Open:
+
+📂 students/admin.py
+
+    from django.contrib import admin
+    from .models import Student
+
+    admin.site.register(Student)
+    
+Ok now to access the DJANGO-ADMIN-PANEL You have to create a superuser
+
+✅ STEP 11: Create Superuser:
+
+    python manage.py createsuperuser
+
+Enter:
+    username
+    email
+    password
+
+✅ STEP 12: Access Admin Panel
+
+Run server:
+
+    python manage.py runserver
+
+Open: http://127.0.0.1:8000/admin/
+
+Login with superuser.
+
+You will see Students model there.
+
+
+
+🚀 STEP 13: Install Django REST Framework (DRF)
+
+            pip install djangorestframework
+
+🚀 STEP 14: Register DRF in settings.py
+        
+        like this 'rest_framework'
+
+STEP 15: Create Serializer
+
+📂 Open: students/
+
+Create new file:
+
+📄 students/serializers.py 
+
+        from rest_framework import serializers
+        from .models import Student
+
+        class StudentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Student
+                fields = '__all__'
+
+        ✅ What this does:
+
+        Converts model → JSON
+
+        Converts JSON → model
+
+🚀 STEP 16: Create APIView
+
+📂 students/views.py    
+
+    from django.shortcuts import render
+    from .serializers import StudentSerializers
+
+    from rest_framework.views import APIView
+    from rest_framework.response import Response
+    from rest_framework import status
+    from .models import Student
+    from .serializers import StudentSerializers
+
+    class StudentListCreateView(APIView):
+
+        def post(self,request):
+            serializer = StudentSerializers(data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED) 
+
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+        def get(self,request):
+            students = Student.objects.all()
+            serializer = StudentSerializers(students,many=True)
+            return Response(serializer.data)
+
+
+🚀 STEP 17: Update URLs
+
+📂 students/urls.py
+
+        from django.contrib import admin
+        from django.urls import path,include
+        from .views import StudentListCreateView
+
+        urlpatterns = [
+            path('students/',StudentListCreateView.as_view(),name='student-list')
+        ]
+
+STEP 18: Make Sure Project URLs Include App URLs
+
+📂 core/urls.py
+
+        from django.contrib import admin
+        from django.urls import path,include
+
+        urlpatterns = [
+            path('admin/', admin.site.urls),
+            path('api/', include('student.urls')),
+        ]
+
+last step : TEST YOUR APIs
+
+
+
+
+
