@@ -130,9 +130,11 @@ Create new file:
 
         ✅ What this does:
 
-        Converts model → JSON
+        1.Converts model → JSON
 
-        Converts JSON → model
+        2.Converts JSON → model
+
+        3.To add field validations for the data we are receiving from frontend.
 
 🚀 STEP 16: Create APIView
 
@@ -159,7 +161,7 @@ Create new file:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
         def get(self,request):
-            students = Student.objects.all()
+            students = Student.objdects.all()
             serializer = StudentSerializers(students,many=True)
             return Response(serializer.data)
 
